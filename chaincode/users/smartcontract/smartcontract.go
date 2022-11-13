@@ -1,8 +1,8 @@
 package smartcontract
 
 import (
-	"fmt"
 	"encoding/json"
+	"fmt"
 	"github.com/hyperledger/fabric-contract-api-go/contractapi"
 )
 
@@ -13,42 +13,43 @@ type SmartContract struct {
 
 // User Data struct
 type User struct {
-	ID           string `json:"id"`
-	Name         string `json:"name"`
-	Email        string `json:"email"`
+	ID           string        `json:"id"`
+	Name         string        `json:"name"`
+	Email        string        `json:"email"`
 	Transactions []Transaction `json:"transactions,omitempty" metadata:",optional"`
 }
+
 // Transaction Data struct
 type Transaction struct {
-	Hash         string `json:"hash"`
-	Amount       string `json:"amount"`
-	Currency     string `json:"currency"`
-	Date         string `json:"date"`
-	BankId       string `json:"bank_id"`
+	Hash     string `json:"hash"`
+	Amount   string `json:"amount"`
+	Currency string `json:"currency"`
+	Date     string `json:"date"`
+	BankId   string `json:"bank_id"`
 }
 
 type TransactionHashMapUserId struct {
-	UserId           string `json:"user_id"`
+	UserId string `json:"user_id"`
 }
 
 type Bank struct {
-	ID                 string `json:"id"`          // 統編
-	Name               string `json:"name"`
-	TransactionCount   int    `json:"transaction_count"`
+	ID               string `json:"id"` // 統編
+	Name             string `json:"name"`
+	TransactionCount int    `json:"transaction_count"`
 }
 
-const BankPrefix = "Bank_"    //前綴詞
+const BankPrefix = "Bank_" //前綴詞
 
 func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) error {
 	var cathayBank Bank = Bank{
-		ID: "04231910",
-		Name: "國泰世華商業銀行",
+		ID:               "04231910",
+		Name:             "國泰世華商業銀行",
 		TransactionCount: 0,
 	}
 	var fubonBank Bank = Bank{
-			ID: "03750168",
-			Name: "台北富邦商業銀行",
-			TransactionCount: 0,
+		ID:               "03750168",
+		Name:             "台北富邦商業銀行",
+		TransactionCount: 0,
 	}
 
 	cathayBankJson, err := json.Marshal(cathayBank)
@@ -59,7 +60,7 @@ func (s *SmartContract) InitLedger(ctx contractapi.TransactionContextInterface) 
 	if err != nil {
 		return err
 	}
-	
+
 	ctx.GetStub().PutState(BankPrefix+cathayBank.ID, cathayBankJson)
 	ctx.GetStub().PutState(BankPrefix+fubonBank.ID, fubonBankJson)
 
@@ -92,7 +93,7 @@ func (s *SmartContract) CreateUser(ctx contractapi.TransactionContextInterface, 
 	if err != nil {
 		return err
 	}
-	
+
 	return ctx.GetStub().PutState(id, userJson)
 }
 
@@ -173,10 +174,10 @@ func (s *SmartContract) CreateTransaction(ctx contractapi.TransactionContextInte
 	}
 
 	var transaction Transaction = Transaction{
-		Hash:      hash,
-		Amount:    amount,
-		Currency:  currency,
-		Date:      date,
+		Hash:     hash,
+		Amount:   amount,
+		Currency: currency,
+		Date:     date,
 	}
 	user.Transactions = append(user.Transactions, transaction)
 
@@ -188,7 +189,7 @@ func (s *SmartContract) CreateTransaction(ctx contractapi.TransactionContextInte
 	ctx.GetStub().PutState(userId, userJson)
 
 	var transactionHashMapUserId TransactionHashMapUserId = TransactionHashMapUserId{
-		UserId:      user.ID,
+		UserId: user.ID,
 	}
 
 	transactionHashMapUserIdJson, err := json.Marshal(transactionHashMapUserId)
@@ -237,7 +238,7 @@ func (s *SmartContract) GetUserByTransactionHash(ctx contractapi.TransactionCont
 }
 
 func (s *SmartContract) GetBankByID(ctx contractapi.TransactionContextInterface, bankId string) (*Bank, error) {
-	bankJson, err := ctx.GetStub().GetState(BankPrefix+bankId)
+	bankJson, err := ctx.GetStub().GetState(BankPrefix + bankId)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read from world state: %v", err)
 	}

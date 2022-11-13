@@ -1,7 +1,6 @@
 package test
 
 import (
-	"users/smartcontract"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -9,6 +8,7 @@ import (
 	"log"
 	"os"
 	"testing"
+	"users/smartcontract"
 
 	"github.com/hyperledger/fabric-chaincode-go/shim"
 	"github.com/hyperledger/fabric-chaincode-go/shimtest"
@@ -30,19 +30,19 @@ var user2 smartcontract.User = smartcontract.User{
 }
 
 var transaction1 smartcontract.Transaction = smartcontract.Transaction{
-	Hash:      "0x000000001",
-	Amount:    "200",
-	Currency:  "USD",
-	Date:      "2022-04-14",
-	BankId: "04231910",
+	Hash:     "0x000000001",
+	Amount:   "200",
+	Currency: "USD",
+	Date:     "2022-04-14",
+	BankId:   "04231910",
 }
 
 var transaction2 smartcontract.Transaction = smartcontract.Transaction{
-	Hash:      "0x000000002",
-	Amount:    "500",
-	Currency:  "NTD",
-	Date:      "2022-04-16",
-	BankId: "04231910",
+	Hash:     "0x000000002",
+	Amount:   "500",
+	Currency: "NTD",
+	Date:     "2022-04-16",
+	BankId:   "04231910",
 }
 
 func TestMain(m *testing.M) {
@@ -246,8 +246,6 @@ func MockGetAllUsers() ([]*smartcontract.User, error) {
 	return users, nil
 }
 
-
-
 func Test_CreateTransaction(t *testing.T) {
 	fmt.Println("CreateTransaction-----------------")
 	NewStub()
@@ -271,7 +269,7 @@ func Test_CreateTransaction(t *testing.T) {
 	if err != nil {
 		fmt.Println("get User error", err)
 	}
-	
+
 	fmt.Println(user)
 	assert.Equal(t, len(user.Transactions), 2)
 
@@ -333,14 +331,13 @@ func Test_GetUserByTransactionHash(t *testing.T) {
 	if err != nil {
 		fmt.Println("get User error", err)
 	}
-	
+
 	assert.Equal(t, mockUser1.ID, user1.ID)
 	assert.Equal(t, mockUser1.Name, user1.Name)
 	assert.Equal(t, mockUser1.Email, user1.Email)
 	assert.Equal(t, mockUser2.ID, user2.ID)
 	assert.Equal(t, mockUser2.Name, user2.Name)
 	assert.Equal(t, mockUser2.Email, user2.Email)
-
 
 }
 
@@ -351,26 +348,26 @@ func MockGetUserByTransactionHash(hash string) (*smartcontract.User, error) {
 			[]byte("GetUserByTransactionHash"),
 			[]byte(hash),
 		})
-		if res.Status != shim.OK {
-			fmt.Println("GetUserByTransactionHash failed", string(res.Message))
-			return nil, errors.New("GetUserByTransactionHash error")
-		}
-		json.Unmarshal(res.Payload, &result)
-		return &result, nil
+	if res.Status != shim.OK {
+		fmt.Println("GetUserByTransactionHash failed", string(res.Message))
+		return nil, errors.New("GetUserByTransactionHash error")
+	}
+	json.Unmarshal(res.Payload, &result)
+	return &result, nil
 }
 
 // part 3
 
-func MockInitLedger() (error) {
+func MockInitLedger() error {
 	res := Stub.MockInvoke("uuid",
 		[][]byte{
 			[]byte("InitLedger"),
 		})
-		if res.Status != shim.OK {
-			fmt.Println("MockInitLedger failed", string(res.Message))
-			return errors.New("MockInitLedger error")
-		}
-		return nil
+	if res.Status != shim.OK {
+		fmt.Println("MockInitLedger failed", string(res.Message))
+		return errors.New("MockInitLedger error")
+	}
+	return nil
 }
 
 func MockGetBankByID(bankId string) (*smartcontract.Bank, error) {
@@ -418,7 +415,7 @@ func Test_BankTransactionCount(t *testing.T) {
 	if err != nil {
 		fmt.Println("get bank error", err)
 	}
-	
+
 	fmt.Println(bank)
 	assert.Equal(t, bank.TransactionCount, 2)
 
